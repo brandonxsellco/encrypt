@@ -7,16 +7,14 @@ userName=$( whoami )
 fullName=$(dscl . read /Users/${userName} RealName | awk -F: '{print $NF}' | sed -e 's/^ *//;/^$/d')
 
 ## First check if the users file system is encrypted
-printf "\nChecking if file system is encrypted ...\nPlease enter your password below \n\n"
-fdeStatus="$(sudo fdesetup status)"
-
+diskutilStatus="$(diskutil apfs list | grep -e 'FileVault' -e 'Name')"
 ## Foward on data to Python processing server
 printf "\nSending file system encryption status to processing server ..."
 
 response=$(
     curl -H "Content-type: application/json" \
         -X POST \
-        -d '{"userName":"'"$userName"'", "fullName":"'"$fullName"'", "fdeStatus":"'"$fdeStatus"'"}' \
+        -d '{"userName":"'"$userName"'", "fullName":"'"$fullName"'", "diskutilStatus":"'"$diskutilStatus"'"}' \
         http://192.168.10.3:8080 \
         --write-out %{http_code} \
         --silent \
@@ -27,8 +25,10 @@ response=$(
 if [ $response = 200 ]; then
 	printf "\nSuccessfully completed encryption check, thank you!\n"
   sleep 3
+  exit 0
 # Else error
 else
   printf "\nEncryption check unsuccessful, please contact Brandon/Neil ...\n"
   sleep 3
+  exit 0
 fi
